@@ -1,0 +1,77 @@
+# Daily gold and silver gram prices -> metal/latest.json, served by GitHub Pages.
+# Deployed as .github/workflows/daily.yml in the public price repository, next to
+# job/metal_prices.py and job/config.json.
+#
+# GitHub: "In a public repository, scheduled workflows are automatically disabled
+# when no repository activity has occurred in 60 days." What counts as activity is
+# not stated, so whether the daily data commit keeps the schedule alive is not
+# stated either.
+name: Daily metal prices
+
+on:
+  schedule:
+    # Hourly 07:17-13:17 UTC: the source publishes at a drifting time (median
+    # 04:30 UTC); a run after today's file is out exits without fetching.
+    - cron: "17 7-13 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "publish = build the file; diagnose-evds = list EVDS gold/silver series codes in the log"
+        type: choice
+        options: [publish, diagnose-evds]
+        default: publish
+
+permissions: {}
+
+concurrency:
+  group: metal-prices
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.mode == 'publish')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # A failed check exits 1: this run is red, the commit step is skipped and
+      # the last good file stays published.
+      - name: Build metal/latest.json
+        env:
+          EVDS_API_KEY: ${{ secrets.EVDS_API_KEY }}
+        run: python3 -I job/metal_prices.py publish --site .
+
+      - name: Commit the new file
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f metal/latest.json ]; then echo "No file yet: nothing to commit."; exit 0; fi
+          git add metal/latest.json
+          if git diff --cached --quiet; then echo "No new data: nothing to commit."; exit 0; fi
+          date=$(python3 -I -c 'import json; print(json.load(open("metal/latest.json"))["date"])')
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Prices for $date"
+          auth=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)
+          echo "::add-mask::$auth"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" push origin HEAD:main
+
+  diagnose-evds:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'diagnose-evds'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: List EVDS gold/silver series
+        env:
+          EVDS_API_KEY: ${{ secrets.EVDS_API_KEY }}
+        run: python3 -I job/metal_prices.py diagnose-evds

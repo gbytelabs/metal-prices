@@ -1,0 +1,60 @@
+{
+  "currencies": [
+    "AED", "AFN", "ALL", "AUD", "AZN", "BAM", "BDT", "BHD", "BND", "CAD", "CHF",
+    "CNY", "DKK", "DZD", "EGP", "EUR", "GBP", "IDR", "INR", "IQD", "IRR", "JOD",
+    "JPY", "KES", "KGS", "KRW", "KWD", "KZT", "LBP", "LYD", "MAD", "MKD", "MYR",
+    "NGN", "NOK", "OMR", "PKR", "QAR", "RUB", "SAR", "SDG", "SEK", "SGD", "SOS",
+    "SYP", "TJS", "TMT", "TND", "TRY", "TZS", "USD", "UZS", "XOF", "YER", "ZAR"
+  ],
+  "excluded": {
+    "IRR": "FX sources disagree (about 12 % on 2026-11-16)",
+    "SDG": "FX sources disagree (about 28 % on 2026-11-16)",
+    "SYP": "FX sources disagree by a factor of about 107 (redenomination)"
+  },
+  "final_hour_utc": 13,
+  "max_gap": {
+    "gold": 0.02,
+    "silver": 0.04,
+    "gold_fallback_nbp": 0.03,
+    "silver_fallback_previous": 0.05,
+    "fx": 0.02
+  },
+  "nbp_max_age_days": 5,
+  "urls": {
+    "fawaz": [
+      "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{ver}/v1/currencies/{metal}.min.json",
+      "https://{date}.currency-api.pages.dev/v1/currencies/{metal}.min.json"
+    ],
+    "gold_api": "https://api.gold-api.com/price/{symbol}",
+    "nbp_gold": "https://api.nbp.pl/api/cenyzlota?format=json",
+    "nbp_usd": "https://api.nbp.pl/api/exchangerates/rates/A/USD?format=json",
+    "fx": "https://open.er-api.com/v6/latest/USD"
+  },
+  "evds": {
+    "base_url": "https://evds3.tcmb.gov.tr/igmevdsms-dis/",
+    "lookback_days": 7,
+    "series": [
+      {
+        "name": "Altın Piyasası (BİST) / Altın - Kapanış Fiyatı - TL/kg",
+        "code": null,
+        "metal": "gold",
+        "grams_per_unit": 1000,
+        "max_gap": 0.03
+      },
+      {
+        "name": "Altın Fiyatları (Ankara Kuyumcular ve Saatçiler Odası) / Külçe Altın Satış Fiyatı (TL/Gr)",
+        "code": null,
+        "metal": "gold",
+        "grams_per_unit": 1,
+        "max_gap": 0.04
+      },
+      {
+        "name": "Gümüş Piyasası (BİST) / Gümüş - Kapanış Fiyatı - TL/gr",
+        "code": null,
+        "metal": "silver",
+        "grams_per_unit": 1,
+        "max_gap": 0.05
+      }
+    ]
+  }
+}
