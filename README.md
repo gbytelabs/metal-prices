@@ -35,7 +35,7 @@ https://gbytelabs.github.io/metal-prices/metal/latest.json
 | `generated_at` | When the job wrote the file (UTC, ISO 8601). |
 | `source` | Where the published numbers come from. |
 | `checked_against` | The independent sources the day was checked against. |
-| `evds_checked` | `true` only when the TRY price was also compared with at least one TCMB EVDS series that day and was within the limit. `"TCMB EVDS"` then appears in `checked_against`. |
+| `evds_checked` | `true` only when at least one TCMB EVDS series gave a value that day and the TRY price was within the limit of every series that gave one. `"TCMB EVDS"` then appears in `checked_against`. In every other case it is `false`: no series answered, or one of them was beyond its limit (see `checks.evds` below). |
 | `unit` | Always the same: the price of 1 gram of fine (pure) metal. |
 | `prices` | ISO 4217 code → `gold` and `silver`. Each value is a positive decimal in that currency per gram. A currency that is not in `prices` has no price that day. |
 | `not_published` | Currencies left out, with the reason. Some are left out permanently (`excluded: ...`), others only for one day. |
@@ -52,7 +52,7 @@ schema 1. Readers should ignore fields they do not know.
 | check: gold and silver in USD | [gold-api.com](https://gold-api.com) | its [terms](https://gold-api.com/terms) permit commercial use |
 | check: gold in USD when gold-api.com does not answer | [NBP, Narodowy Bank Polski](https://api.nbp.pl/en.html) gold price and USD rate | public API of the central bank of Poland |
 | check: exchange rate of each currency | [ExchangeRate-API open access](https://www.exchangerate-api.com/docs/free) (open.er-api.com) | used only as a check; its rates are not republished |
-| check: TRY gold and silver | **TCMB EVDS**, the Electronic Data Delivery System of the Central Bank of the Republic of Türkiye. The series used are published there with Borsa İstanbul and the Ankara Chamber of Jewellers and Watchmakers as data sources. | EVDS terms: data may be used and published with the source cited; it is not passed on to users as a charge |
+| check: TRY gold and silver | **TCMB EVDS**, the Electronic Data Delivery System of the Central Bank of the Republic of Türkiye. The series used are the Borsa İstanbul gold and silver closing prices (`TP.ALTINPIYASA.KAP02`, TL/kg, and `TP.GUMUSPIYASA.KAP05`, TL/g), published there with Borsa İstanbul as data source. | EVDS terms: data may be used and published with the source cited; it is not passed on to users as a charge |
 
 Source of the check: TCMB EVDS (evds3.tcmb.gov.tr), on the days where
 `evds_checked` is `true`.
@@ -75,9 +75,36 @@ Whoever uses it is responsible for the laws that apply to them.
 - The job reads the source's file for the current UTC day and computes gram price = price per troy ounce ÷ 31.1034768.
 - The USD gold price must be within 2 % of gold-api.com, and the USD silver price within 4 %. If gold-api.com does not answer, gold is compared with NBP (3 %) and silver with the previous published file (5 %).
 - For each currency, the exchange rate implied by the source must be within 2 % of open.er-api.com. Otherwise that currency is left out for the day.
-- When a TCMB EVDS series has a value in the last 7 days, it must be within its limit of the TRY price. If EVDS is unreachable or has no value, the day is not stopped. The file then has `evds_checked: false`.
-- If any check fails, nothing is written. The previous file stays and its `date` shows how old it is.
+- The TRY price is compared with the latest value of each TCMB EVDS series in the last 7 days: gold within 3 %, silver within 5 %. If EVDS is unreachable or has no value, the day is not stopped. The file then has `evds_checked: false`. A gap beyond the EVDS limit does not stop the day either, for now (see below).
+- If any other check fails, nothing is written. The previous file stays and its `date` shows how old it is.
 - IRR, SDG and SYP are never published, because the exchange-rate sources disagree on them by far more than 2 %.
+
+### The EVDS check (`checks.evds`)
+
+The Borsa İstanbul prices are domestic prices. They may carry a premium over the
+international price converted to TRY. The size of that premium has not been
+measured yet, so the EVDS limits are not enforced: a day where a series is beyond
+its limit is still published, with `evds_checked: false` and the status
+`diverged_not_enforced`. The gaps are recorded every day. Once they have been
+read for some days, the limit may be enforced (`evds.enforce` in the job's
+configuration). From then on, such a day is refused like any other failed check,
+and the file keeps its older `date`.
+
+| `checks.evds.status` | meaning | `evds_checked` |
+|---|---|---|
+| `checked` | At least one series gave a value, and every series that gave one is within its limit. | `true` |
+| `diverged_not_enforced` | At least one series gave a value beyond its limit. The day was published because the limit is not enforced. | `false` |
+| `no_data` | EVDS answered, but no series had a value in the last 7 days. | `false` |
+| `unavailable` | No series gave a value, and at least one call to EVDS failed. | `false` |
+| `no_key` | The run had no EVDS key. | `false` |
+| `not_configured` | No EVDS series is configured. | `false` |
+| `try_not_published` | TRY did not pass the day's exchange-rate check, so there was nothing to compare. | `false` |
+
+With `checked` and `diverged_not_enforced`, `series` lists every series that
+gave a value: `code`, `metal`, `date` (the date of the EVDS value, which can
+be earlier than the file's `date`), `try_per_gram` (the EVDS value per gram),
+`gap_pct`, `limit_pct` and `within_limit`. A series that gave no value is not
+listed.
 
 ## No guarantee
 

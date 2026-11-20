@@ -4,18 +4,19 @@
 # requires-python = ">=3.10"
 # dependencies = []
 # ///
-"""Daily gold and silver price per gram per currency, one JSON file (T-310).
+"""Daily gold and silver price per gram per currency, one JSON file.
 
 Published source: fawazahmed0 currency-api (CC0). Before anything is written
 the day is checked: the USD metal price against gold-api.com (fallbacks: NBP
 for gold, the last published file for silver), each currency's FX against
 open.er-api.com, and the TRY side against TCMB EVDS when a key and series codes
 are there. A day that fails a check writes nothing: the last good file stays
-and the run exits 1. EVDS missing, down or without data never stops the day.
+and the run exits 1. EVDS missing, down or without data never stops the day;
+an EVDS gap beyond its limit stops it only while `evds.enforce` is true.
 Standard library only.
 
     python3 metal_prices.py publish --site <published repo root>
-    python3 metal_prices.py diagnose-evds     # lists EVDS gold/silver series
+    python3 metal_prices.py diagnose-evds     # EVDS gold/silver series, latest values
 
 The EVDS key comes only from the environment variable EVDS_API_KEY. It is sent
 as the `key` request header (never in a URL) and is redacted from every line
@@ -44,6 +45,7 @@ KEY_ENV = "EVDS_API_KEY"
 SOURCE = "fawazahmed0 currency-api"
 EVDS_NAME = "TCMB EVDS"
 DIAGNOSE_MATCH = r"alt[ıi]n|g[üu]m[üu][şs]|k[ıi]ymetli|gold|silver|precious"
+SECRET_FIELD = re.compile(r"key|token|secret|pass", re.IGNORECASE)
 
 _secrets: list[str] = []
 
@@ -98,7 +100,7 @@ def _positive(v):
 
 
 def gap(a, b):
-    """|a - b| over their mean, the measure the source briefs used."""
+    """|a - b| over the mean of the two."""
     return abs(a - b) / ((a + b) / 2)
 
 
@@ -282,6 +284,18 @@ def evds_series_url(base, code, start, end):
     return f"{base}series={code}&startDate={start:%d-%m-%Y}&endDate={end:%d-%m-%Y}&type=json"
 
 
+def fetch_evds(fetch, ecfg, code, day, key):
+    """The raw answer of one series over the lookback window up to `day`."""
+    start = day - dt.timedelta(days=ecfg["lookback_days"])
+    return fetch(evds_series_url(ecfg["base_url"], code, start, day), headers={"key": key}, follow_redirects=False)
+
+
+def evds_items(doc):
+    if not isinstance(doc, dict) or not isinstance(doc.get("items"), list):
+        raise ValueError("no item list")
+    return doc["items"]
+
+
 def latest_evds_value(items, code, day):
     """`(date, value)` of the newest non-empty value up to `day`, or None."""
     field = code.replace(".", "_")
@@ -300,9 +314,24 @@ def latest_evds_value(items, code, day):
     return best
 
 
+def compare_evds(s, date, value, ours, label=""):
+    """The per-series record of one EVDS value against our TRY price per gram."""
+    ref = value / s["grams_per_unit"]
+    g = gap(ours, ref)
+    inside = g <= s["max_gap"]
+    log(
+        f"  TRY {s['metal']}{label}: {ours:.2f} vs {ref:.2f} TRY/g ({EVDS_NAME} {s['code']}, {date}): "
+        f"gap {g:.2%}, limit {s['max_gap']:.0%}{'' if inside else ', BEYOND the limit'}"
+    )
+    return {
+        "code": s["code"], "metal": s["metal"], "date": date.isoformat(), "try_per_gram": _round(ref),
+        "gap_pct": _pct(g), "limit_pct": _pct(s["max_gap"]), "within_limit": inside,
+    }
+
+
 def check_evds(fetch, cfg, day, try_prices, key):
-    """The EVDS record. Raises Refused only when a value it did read differs
-    from the TRY price; a missing key, code, answer or value is a status."""
+    """The EVDS record. Raises Refused only when `evds.enforce` is true and a
+    value it did read is beyond its limit; anything else is a status."""
     ecfg = cfg["evds"]
     series = [s for s in ecfg["series"] if s.get("code")]
     if not series:
@@ -311,39 +340,29 @@ def check_evds(fetch, cfg, day, try_prices, key):
         return {"status": "no_key"}
     if try_prices is None:
         return {"status": "try_not_published"}
-    start = day - dt.timedelta(days=ecfg["lookback_days"])
-    checked, failed = [], 0
+    compared, failed = [], 0
     for s in series:
-        url = evds_series_url(ecfg["base_url"], s["code"], start, day)
         try:
-            doc = _json(fetch(url, headers={"key": key}, follow_redirects=False), s["code"])
-            items = doc["items"]
-            if not isinstance(items, list):
-                raise ValueError("no item list")
+            items = evds_items(_json(fetch_evds(fetch, ecfg, s["code"], day, key), s["code"]))
         except Exception as e:  # an optional referee: any failure is "unavailable"
             log(f"  {EVDS_NAME} {s['code']} unavailable: {type(e).__name__}: {e}")
             failed += 1
             continue
         found = latest_evds_value(items, s["code"], day)
         if found is None:
-            log(f"  {EVDS_NAME} {s['code']}: no value since {start}")
+            log(f"  {EVDS_NAME} {s['code']}: no value in the last {ecfg['lookback_days']} days")
             continue
-        date, value = found
-        ref, ours = value / s["grams_per_unit"], try_prices[s["metal"]]
-        g = gap(ours, ref)
-        log(
-            f"  TRY {s['metal']}: {ours:.2f} vs {ref:.2f} TRY/g ({EVDS_NAME} {s['code']}, {date}): "
-            f"gap {g:.2%}, limit {s['max_gap']:.0%}"
-        )
-        if g > s["max_gap"]:
-            raise Refused(f"TRY {s['metal']} differs from {EVDS_NAME} {s['code']} ({date}) by {g:.2%}")
-        checked.append({
-            "code": s["code"], "metal": s["metal"], "date": date.isoformat(),
-            "gap_pct": _pct(g), "limit_pct": _pct(s["max_gap"]),
-        })
-    if checked:
-        return {"status": "checked", "series": checked}
-    return {"status": "unavailable" if failed else "no_data"}
+        compared.append(compare_evds(s, *found, try_prices[s["metal"]]))
+    if not compared:
+        return {"status": "unavailable" if failed else "no_data"}
+    beyond = [c for c in compared if not c["within_limit"]]
+    if not beyond:
+        return {"status": "checked", "series": compared}
+    if ecfg.get("enforce", False):
+        c = beyond[0]
+        raise Refused(f"TRY {c['metal']} differs from {EVDS_NAME} {c['code']} ({c['date']}) by {c['gap_pct']:.2f}%")
+    log(f"  {EVDS_NAME} diverged beyond its limit; not enforced (evds.enforce is false): evds_checked is false")
+    return {"status": "diverged_not_enforced", "series": compared}
 
 
 # ── the run ──────────────────────────────────────────────────────────────────
@@ -418,12 +437,102 @@ def publish(site, cfg, fetch, now, key):
     return 0
 
 
-def diagnose_evds(fetch, cfg, key, pattern=DIAGNOSE_MATCH, pause=0.5):
-    """Print EVDS data groups whose name matches `pattern` and their series."""
+def _describe(value, field=""):
+    """Type of `value`; for a scalar not named like a secret, its start too."""
+    kind = type(value).__name__
+    if isinstance(value, (dict, list)):
+        return f"{kind}[{len(value)}]"
+    if SECRET_FIELD.search(field):
+        return f"{kind} (value not shown)"
+    return f"{kind} {redact(str(value))[:40]!r}"
+
+
+def answer_shape(doc):
+    """Lines describing an answer: its keys and types, and the first item only."""
+    lines = [f"answer: {_describe(doc)}"]
+    first = None
+    if isinstance(doc, dict):
+        lines += [f"  {k}: {_describe(v, str(k))}" for k, v in doc.items()]
+        first = next((v[0] for v in doc.values() if isinstance(v, list) and v), None)
+    elif isinstance(doc, list) and doc:
+        first = doc[0]
+    if isinstance(first, dict):
+        lines.append("first item:")
+        lines += [f"  {k}: {_describe(v, str(k))}" for k, v in first.items()]
+    elif first is not None:
+        lines.append(f"first item: {_describe(first)}")
+    return lines
+
+
+def diagnose_values(fetch, cfg, key, now, pause):
+    """Print each configured series' latest value and, when the source has
+    today's file, its gap against that TRY price. Nothing is written. True
+    when every configured series gave a value."""
+    ecfg, day = cfg["evds"], now.date()
+    series = [s for s in ecfg["series"] if s.get("code")]
+    if not series:
+        log("\nno series code in config.json: no values to read")
+        return True
+    log(f"\nlatest values, {day - dt.timedelta(days=ecfg['lookback_days'])}..{day}:")
+    ours = None
+    try:
+        xau = load_fawaz(fetch, cfg, day, "xau")
+        xag = load_fawaz(fetch, cfg, day, "xag") if xau is not None else None
+        if xau and xag and _positive(xau.get("TRY")) and _positive(xag.get("TRY")):
+            ours = {"gold": xau["TRY"] / GRAMS_PER_OUNCE, "silver": xag["TRY"] / GRAMS_PER_OUNCE}
+    except Refused as e:
+        log(f"  {e}")
+    if ours is None:
+        log(f"  no TRY price from {SOURCE} for {day} in this run: no gap computed")
+    ok = True
+    for s in series:
+        code = s["code"]
+        try:
+            body = fetch_evds(fetch, ecfg, code, day, key)
+        except Exception as e:
+            log(f"  {code}: unavailable: {type(e).__name__}: {e}")
+            ok = False
+            continue
+        finally:
+            time.sleep(pause)
+        try:
+            doc = json.loads(body)
+        except (ValueError, UnicodeDecodeError):
+            text = redact(body.decode("utf-8", "replace"))
+            log(f"  {code}: answer is not JSON, {len(body)} bytes, starts {text[:120]!r}")
+            ok = False
+            continue
+        try:
+            found = latest_evds_value(evds_items(doc), code, day)
+        except ValueError:
+            found = None
+        if found is None:
+            log(f"  {code}: no value read; the answer's shape, for fixing the parser:")
+            for line in answer_shape(doc):
+                log(f"    {line}")
+            ok = False
+            continue
+        date, value = found
+        log(f"  {code}: {value:.2f} per {s['grams_per_unit']} g on {date} = {value / s['grams_per_unit']:.2f} TRY/g")
+        if ours is not None:
+            compare_evds(s, date, value, ours[s["metal"]], label=f" ({SOURCE} {day}, unchecked)")
+    return ok
+
+
+def diagnose_evds(fetch, cfg, key, pattern=DIAGNOSE_MATCH, pause=0.5, now=None):
+    """Print EVDS data groups whose name matches `pattern` and their series,
+    then the configured series' latest values. Never writes a file."""
     register_secret(key)
     if not key:
         log(f"{KEY_ENV} is not set: nothing to diagnose")
         return 2
+    groups = list_evds_groups(fetch, cfg, key, pattern, pause)
+    values_ok = diagnose_values(fetch, cfg, key, now or dt.datetime.now(dt.timezone.utc), pause)
+    return 0 if groups and values_ok else 1
+
+
+def list_evds_groups(fetch, cfg, key, pattern, pause):
+    """The matching data groups, each printed with its series."""
     base, rx = cfg["evds"]["base_url"], re.compile(pattern, re.IGNORECASE)
 
     def get(path):
@@ -437,7 +546,7 @@ def diagnose_evds(fetch, cfg, key, pattern=DIAGNOSE_MATCH, pause=0.5):
         categories = get("categories/type=json")
     except Exception as e:
         log(f"categories unavailable: {type(e).__name__}: {e}")
-        return 1
+        return []
     groups = []
     for c in categories:
         try:
@@ -464,7 +573,7 @@ def diagnose_evds(fetch, cfg, key, pattern=DIAGNOSE_MATCH, pause=0.5):
                 f"{s.get('START_DATE')}..{s.get('END_DATE')}"
             )
     log(f"\n{len(groups)} data group(s) matched /{pattern}/")
-    return 0 if groups else 1
+    return groups
 
 
 def main(argv=None):
@@ -474,14 +583,14 @@ def main(argv=None):
     pub = sub.add_parser("publish", help="build and write metal/latest.json")
     pub.add_argument("--site", default=".", help="root of the published repository")
     pub.add_argument("--now", help="UTC time to act as, ISO 8601 (default: the clock)")
-    diag = sub.add_parser("diagnose-evds", help="list EVDS gold/silver series (needs the key)")
+    diag = sub.add_parser("diagnose-evds", help="list EVDS gold/silver series and read the configured ones (needs the key)")
     diag.add_argument("--match", default=DIAGNOSE_MATCH)
     args = p.parse_args(argv)
 
     cfg = load_config(args.config)
     key = os.environ.get(KEY_ENV, "").strip()
     if args.mode == "diagnose-evds":
-        return diagnose_evds(http_get, cfg, key, args.match)
+        return diagnose_evds(http_get, cfg, key, pattern=args.match)
     now = dt.datetime.now(dt.timezone.utc)
     if args.now:
         now = dt.datetime.fromisoformat(args.now)

@@ -33,24 +33,18 @@
   "evds": {
     "base_url": "https://evds3.tcmb.gov.tr/igmevdsms-dis/",
     "lookback_days": 7,
+    "enforce": false,
     "series": [
       {
         "name": "Altın Piyasası (BİST) / Altın - Kapanış Fiyatı - TL/kg",
-        "code": null,
+        "code": "TP.ALTINPIYASA.KAP02",
         "metal": "gold",
         "grams_per_unit": 1000,
         "max_gap": 0.03
       },
       {
-        "name": "Altın Fiyatları (Ankara Kuyumcular ve Saatçiler Odası) / Külçe Altın Satış Fiyatı (TL/Gr)",
-        "code": null,
-        "metal": "gold",
-        "grams_per_unit": 1,
-        "max_gap": 0.04
-      },
-      {
         "name": "Gümüş Piyasası (BİST) / Gümüş - Kapanış Fiyatı - TL/gr",
-        "code": null,
+        "code": "TP.GUMUSPIYASA.KAP05",
         "metal": "silver",
         "grams_per_unit": 1,
         "max_gap": 0.05

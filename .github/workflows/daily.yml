@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "publish = build the file; diagnose-evds = list EVDS gold/silver series codes in the log"
+        description: "publish = build the file; diagnose-evds = list EVDS gold/silver series codes and the configured series' latest values and gaps in the log (writes nothing)"
         type: choice
         options: [publish, diagnose-evds]
         default: publish
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: List EVDS gold/silver series
+      - name: List EVDS gold/silver series and read the configured ones
         env:
           EVDS_API_KEY: ${{ secrets.EVDS_API_KEY }}
         run: python3 -I job/metal_prices.py diagnose-evds
