@@ -57,6 +57,19 @@ schema 1. Readers should ignore fields they do not know.
 Source of the check: TCMB EVDS (evds3.tcmb.gov.tr), on the days where
 `evds_checked` is `true`.
 
+## Licence and terms of use
+
+The code and files of this repository are under the MIT License (see `LICENSE`).
+
+The published numbers are computed from the daily files of the fawazahmed0
+currency-api, which are under CC0-1.0. The other sources in the table above are
+used only to check a day. Their data is not republished. Each source keeps its own
+terms, as listed in that table.
+
+Nothing in this repository gives permission to use the file or the code for a
+purpose that is against the law, or against the terms of the sources named above.
+Whoever uses it is responsible for the laws that apply to them.
+
 ## How a day is checked
 
 - The job reads the source's file for the current UTC day and computes gram price = price per troy ounce ÷ 31.1034768.
