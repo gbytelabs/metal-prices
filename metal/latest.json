@@ -1,0 +1,249 @@
+{
+ "checked_against": [
+  "gold-api.com",
+  "open.er-api.com"
+ ],
+ "checks": {
+  "evds": {
+   "status": "not_configured"
+  },
+  "fx": {
+   "limit_pct": 2.0,
+   "max_gap_pct": 1.32,
+   "referee": "open.er-api.com"
+  },
+  "metal": {
+   "gold": {
+    "gap_pct": 0.83,
+    "limit_pct": 2.0,
+    "referee": "gold-api.com"
+   },
+   "silver": {
+    "gap_pct": 0.55,
+    "limit_pct": 4.0,
+    "referee": "gold-api.com"
+   }
+  }
+ },
+ "date": "2026-11-20",
+ "evds_checked": false,
+ "generated_at": "2026-11-20T12:26:49Z",
+ "not_published": {
+  "IRR": "excluded: FX sources disagree (about 12 % on 2026-11-16)",
+  "SDG": "excluded: FX sources disagree (about 28 % on 2026-11-16)",
+  "SYP": "excluded: FX sources disagree by a factor of about 107 (redenomination)"
+ },
+ "prices": {
+  "AED": {
+   "gold": 419.2123,
+   "silver": 4.9505601
+  },
+  "AFN": {
+   "gold": 7335.1989,
+   "silver": 86.622801
+  },
+  "ALL": {
+   "gold": 9376.3665,
+   "silver": 110.72735
+  },
+  "AUD": {
+   "gold": 171.00922,
+   "silver": 2.0194814
+  },
+  "AZN": {
+   "gold": 194.05211,
+   "silver": 2.2915993
+  },
+  "BAM": {
+   "gold": 203.214,
+   "silver": 2.3997939
+  },
+  "BDT": {
+   "gold": 14229.395,
+   "silver": 168.03772
+  },
+  "BHD": {
+   "gold": 42.920034,
+   "silver": 0.50685108
+  },
+  "BND": {
+   "gold": 147.23693,
+   "silver": 1.7387498
+  },
+  "CAD": {
+   "gold": 163.42233,
+   "silver": 1.9298863
+  },
+  "CHF": {
+   "gold": 96.086573,
+   "silver": 1.1347052
+  },
+  "CNY": {
+   "gold": 761.26784,
+   "silver": 8.989961
+  },
+  "DKK": {
+   "gold": 776.58954,
+   "silver": 9.170898
+  },
+  "DZD": {
+   "gold": 15647.805,
+   "silver": 184.788
+  },
+  "EGP": {
+   "gold": 6143.4749,
+   "silver": 72.549498
+  },
+  "EUR": {
+   "gold": 103.90167,
+   "silver": 1.2269951
+  },
+  "GBP": {
+   "gold": 87.037292,
+   "silver": 1.0278404
+  },
+  "IDR": {
+   "gold": 2085482.3,
+   "silver": 24627.869
+  },
+  "INR": {
+   "gold": 10614.342,
+   "silver": 125.34685
+  },
+  "IQD": {
+   "gold": 173413.29,
+   "silver": 2047.8715
+  },
+  "JOD": {
+   "gold": 80.931659,
+   "silver": 0.95573781
+  },
+  "JPY": {
+   "gold": 18162.359,
+   "silver": 214.48286
+  },
+  "KES": {
+   "gold": 14846.636,
+   "silver": 175.32684
+  },
+  "KGS": {
+   "gold": 9983.3291,
+   "silver": 117.89509
+  },
+  "KRW": {
+   "gold": 152490.72,
+   "silver": 1800.7928
+  },
+  "KWD": {
+   "gold": 35.571525,
+   "silver": 0.42007111
+  },
+  "KZT": {
+   "gold": 51708.333,
+   "silver": 610.63383
+  },
+  "LBP": {
+   "gold": 10277086.0,
+   "silver": 121364.12
+  },
+  "LYD": {
+   "gold": 740.51527,
+   "silver": 8.7448899
+  },
+  "MAD": {
+   "gold": 1137.1137,
+   "silver": 13.428398
+  },
+  "MKD": {
+   "gold": 6394.6335,
+   "silver": 75.51548
+  },
+  "MYR": {
+   "gold": 469.53162,
+   "silver": 5.5447909
+  },
+  "NGN": {
+   "gold": 154097.95,
+   "silver": 1819.7729
+  },
+  "NOK": {
+   "gold": 1113.4073,
+   "silver": 13.148444
+  },
+  "OMR": {
+   "gold": 43.934292,
+   "silver": 0.51882866
+  },
+  "PKR": {
+   "gold": 31590.439,
+   "silver": 373.05768
+  },
+  "QAR": {
+   "gold": 415.50245,
+   "silver": 4.9067499
+  },
+  "RUB": {
+   "gold": 9330.7746,
+   "silver": 110.18894
+  },
+  "SAR": {
+   "gold": 428.05885,
+   "silver": 5.0550308
+  },
+  "SEK": {
+   "gold": 1161.3653,
+   "silver": 13.71479
+  },
+  "SGD": {
+   "gold": 147.23693,
+   "silver": 1.7387498
+  },
+  "SOS": {
+   "gold": 65315.358,
+   "silver": 771.32186
+  },
+  "TJS": {
+   "gold": 1052.1922,
+   "silver": 12.425543
+  },
+  "TMT": {
+   "gold": 400.34614,
+   "silver": 4.727766
+  },
+  "TND": {
+   "gold": 348.33535,
+   "silver": 4.1135604
+  },
+  "TRY": {
+   "gold": 5769.6999,
+   "silver": 68.135517
+  },
+  "TZS": {
+   "gold": 303273.93,
+   "silver": 3581.4212
+  },
+  "USD": {
+   "gold": 114.14903,
+   "silver": 1.3480082
+  },
+  "UZS": {
+   "gold": 1368568.4,
+   "silver": 16161.692
+  },
+  "XOF": {
+   "gold": 68155.026,
+   "silver": 804.85605
+  },
+  "YER": {
+   "gold": 26995.339,
+   "silver": 318.79325
+  },
+  "ZAR": {
+   "gold": 1999.9275,
+   "silver": 23.617535
+  }
+ },
+ "schema": 1,
+ "source": "fawazahmed0 currency-api",
+ "unit": "price of 1 gram of fine gold / fine silver in the currency"
+}
