@@ -8,11 +8,11 @@
    "series": [
     {
      "code": "TP.ALTINPIYASA.KAP02",
-     "date": "2026-11-23",
-     "gap_pct": 3.09,
+     "date": "2026-11-24",
+     "gap_pct": 4.18,
      "limit_pct": 3.0,
      "metal": "gold",
-     "try_per_gram": 6080.0,
+     "try_per_gram": 6140.0,
      "within_limit": false
     }
    ],
@@ -20,25 +20,25 @@
   },
   "fx": {
    "limit_pct": 2.0,
-   "max_gap_pct": 1.13,
+   "max_gap_pct": 1.67,
    "referee": "open.er-api.com"
   },
   "metal": {
    "gold": {
-    "gap_pct": 0.89,
+    "gap_pct": 1.69,
     "limit_pct": 2.0,
     "referee": "gold-api.com"
    },
    "silver": {
-    "gap_pct": 1.16,
+    "gap_pct": 3.06,
     "limit_pct": 4.0,
     "referee": "gold-api.com"
    }
   }
  },
- "date": "2026-11-23",
+ "date": "2026-11-24",
  "evds_checked": false,
- "generated_at": "2026-11-23T19:18:26Z",
+ "generated_at": "2026-11-24T18:56:24Z",
  "not_published": {
   "IRR": "excluded: FX sources disagree (about 12 % on 2026-11-16)",
   "SDG": "excluded: FX sources disagree (about 28 % on 2026-11-16)",
@@ -46,212 +46,212 @@
  },
  "prices": {
   "AED": {
-   "gold": 427.90125,
-   "silver": 5.038919
+   "gold": 427.2075,
+   "silver": 4.9527038
   },
   "AFN": {
-   "gold": 7509.8817,
-   "silver": 88.435557
+   "gold": 7498.5663,
+   "silver": 86.932411
   },
   "ALL": {
-   "gold": 9535.7536,
-   "silver": 112.29201
+   "gold": 9557.6077,
+   "silver": 110.8033
   },
   "AUD": {
-   "gold": 175.3653,
-   "silver": 2.0650829
+   "gold": 175.5044,
+   "silver": 2.0346584
   },
   "AZN": {
-   "gold": 198.07302,
-   "silver": 2.3324865
+   "gold": 197.75438,
+   "silver": 2.292607
   },
   "BAM": {
-   "gold": 207.15266,
-   "silver": 2.4394074
+   "gold": 208.42369,
+   "silver": 2.4162984
   },
   "BDT": {
-   "gold": 14483.767,
-   "silver": 170.55928
+   "gold": 14528.695,
+   "silver": 168.43413
   },
   "BHD": {
-   "gold": 43.809631,
-   "silver": 0.5158975
+   "gold": 43.738603,
+   "silver": 0.50707056
   },
   "BND": {
-   "gold": 150.22868,
-   "silver": 1.7690768
+   "gold": 150.23302,
+   "silver": 1.7416821
   },
   "CAD": {
-   "gold": 166.82075,
-   "silver": 1.9644631
+   "gold": 166.94467,
+   "silver": 1.9354236
   },
   "CHF": {
-   "gold": 97.720522,
-   "silver": 1.1507463
+   "gold": 97.90815,
+   "silver": 1.1350692
   },
   "CNY": {
-   "gold": 776.89862,
-   "silver": 9.1486744
+   "gold": 775.28034,
+   "silver": 8.9879833
   },
   "DKK": {
-   "gold": 791.66499,
-   "silver": 9.3225616
+   "gold": 796.52163,
+   "silver": 9.2342379
   },
   "DZD": {
-   "gold": 15962.685,
-   "silver": 187.97486
+   "gold": 15989.371,
+   "silver": 185.36804
   },
   "EGP": {
-   "gold": 6340.4951,
-   "silver": 74.664987
+   "gold": 6303.9472,
+   "silver": 73.082948
   },
   "EUR": {
-   "gold": 105.91547,
-   "silver": 1.2472492
+   "gold": 106.56534,
+   "silver": 1.2354338
   },
   "GBP": {
-   "gold": 88.748202,
-   "silver": 1.0450893
+   "gold": 89.127072,
+   "silver": 1.0332684
   },
   "IDR": {
-   "gold": 2120006.8,
-   "silver": 24964.972
+   "gold": 2120518.2,
+   "silver": 24583.601
   },
   "INR": {
-   "gold": 10813.359,
-   "silver": 127.33695
+   "gold": 10802.871,
+   "silver": 125.23989
   },
   "IQD": {
-   "gold": 176447.87,
-   "silver": 2077.8311
+   "gold": 177090.06,
+   "silver": 2053.0412
   },
   "JOD": {
-   "gold": 82.609119,
-   "silver": 0.97279607
+   "gold": 82.475185,
+   "silver": 0.95615167
   },
   "JPY": {
-   "gold": 18521.649,
-   "silver": 218.10894
+   "gold": 18537.716,
+   "silver": 214.91153
   },
   "KES": {
-   "gold": 15156.545,
-   "silver": 178.48184
+   "gold": 15132.93,
+   "silver": 175.43915
   },
   "KGS": {
-   "gold": 10190.329,
-   "silver": 120.00021
+   "gold": 10173.533,
+   "silver": 117.94385
   },
   "KRW": {
-   "gold": 156604.23,
-   "silver": 1844.1546
+   "gold": 156198.27,
+   "silver": 1810.8384
   },
   "KWD": {
-   "gold": 36.28784,
-   "silver": 0.42732169
+   "gold": 36.292959,
+   "silver": 0.42075169
   },
   "KZT": {
-   "gold": 53072.571,
-   "silver": 624.97688
+   "gold": 53127.204,
+   "silver": 615.91453
   },
   "LBP": {
-   "gold": 10453893.0,
-   "silver": 123103.92
+   "gold": 10513266.0,
+   "silver": 121882.44
   },
   "LYD": {
-   "gold": 752.05105,
-   "silver": 8.8560721
+   "gold": 755.4361,
+   "silver": 8.7579251
   },
   "MAD": {
-   "gold": 1162.0172,
-   "silver": 13.683789
+   "gold": 1165.2543,
+   "silver": 13.509032
   },
   "MKD": {
-   "gold": 6521.0729,
-   "silver": 76.791451
+   "gold": 6557.581,
+   "silver": 76.023376
   },
   "MYR": {
-   "gold": 480.19201,
-   "silver": 5.6546893
+   "gold": 478.7687,
+   "silver": 5.5504633
   },
   "NGN": {
-   "gold": 159220.45,
-   "silver": 1874.9629
+   "gold": 159052.47,
+   "silver": 1843.9278
   },
   "NOK": {
-   "gold": 1132.8545,
-   "silver": 13.340372
+   "gold": 1143.54,
+   "silver": 13.257293
   },
   "OMR": {
-   "gold": 44.844673,
-   "silver": 0.52808604
+   "gold": 44.748823,
+   "silver": 0.51878225
   },
   "PKR": {
-   "gold": 32202.676,
-   "silver": 379.21524
+   "gold": 32226.935,
+   "silver": 373.61344
   },
   "QAR": {
-   "gold": 424.11452,
-   "silver": 4.9943268
+   "gold": 423.4269,
+   "silver": 4.9088746
   },
   "RUB": {
-   "gold": 9472.1219,
-   "silver": 111.54269
+   "gold": 9522.1896,
+   "silver": 110.39269
   },
   "SAR": {
-   "gold": 436.93116,
-   "silver": 5.1452543
+   "gold": 436.22277,
+   "silver": 5.0572197
   },
   "SEK": {
-   "gold": 1187.6863,
-   "silver": 13.986066
+   "gold": 1196.1451,
+   "silver": 13.867155
   },
   "SGD": {
-   "gold": 150.22868,
-   "silver": 1.7690768
+   "gold": 150.23302,
+   "silver": 1.7416821
   },
   "SOS": {
-   "gold": 66376.698,
-   "silver": 781.64484
+   "gold": 66569.295,
+   "silver": 771.75144
   },
   "TJS": {
-   "gold": 1071.0141,
-   "silver": 12.612146
+   "gold": 1072.8703,
+   "silver": 12.438004
   },
   "TMT": {
-   "gold": 407.74674,
-   "silver": 4.8015816
+   "gold": 408.02333,
+   "silver": 4.7302978
   },
   "TND": {
-   "gold": 352.61499,
-   "silver": 4.1523561
+   "gold": 357.43138,
+   "silver": 4.143775
   },
   "TRY": {
-   "gold": 5895.041,
-   "silver": 69.419367
+   "gold": 5888.7659,
+   "silver": 68.269666
   },
   "TZS": {
-   "gold": 310433.62,
-   "silver": 3655.6329
+   "gold": 310573.99,
+   "silver": 3600.5477
   },
   "USD": {
-   "gold": 116.51498,
-   "silver": 1.3720678
+   "gold": 116.32607,
+   "silver": 1.3485919
   },
   "UZS": {
-   "gold": 1397158.8,
-   "silver": 16452.791
+   "gold": 1400461.9,
+   "silver": 16235.841
   },
   "XOF": {
-   "gold": 69475.997,
-   "silver": 818.14185
+   "gold": 69902.282,
+   "silver": 810.39143
   },
   "YER": {
-   "gold": 27564.031,
-   "silver": 324.59105
+   "gold": 27522.447,
+   "silver": 319.07336
   },
   "ZAR": {
-   "gold": 2028.2845,
-   "silver": 23.88486
+   "gold": 2035.9453,
+   "silver": 23.60313
   }
  },
  "schema": 1,
